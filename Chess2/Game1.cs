@@ -16,6 +16,7 @@ namespace Chess2
         private Texture2D pixel;
 
         private Texture2D piece;
+        private Texture2D[] pieces = new Texture2D[6];
 
         private int board_offset_x = 20;
         private int board_offset_y = 20;
@@ -35,6 +36,13 @@ namespace Chess2
             _graphics.PreferredBackBufferWidth = 64 * 8 + 40;
             _graphics.PreferredBackBufferHeight = 64 * 8 + 40;
             _graphics.ApplyChanges();
+
+            pieces[(int)ChessPieceType.Pawn] = Content.Load<Texture2D>(@"sprites\pawn");
+            pieces[(int)ChessPieceType.Rook] = Content.Load<Texture2D>(@"sprites\rook");
+            pieces[(int)ChessPieceType.Knight] = Content.Load<Texture2D>(@"sprites\knight");
+            pieces[(int)ChessPieceType.Bishop] = Content.Load<Texture2D>(@"sprites\bishop");
+            pieces[(int)ChessPieceType.Queen] = Content.Load<Texture2D>(@"sprites\queen");
+            pieces[(int)ChessPieceType.King] = Content.Load<Texture2D>(@"sprites\king");
 
             piece = Content.Load<Texture2D>(@"sprites\piece");
 
@@ -80,19 +88,20 @@ namespace Chess2
                 {
                     var p = model.Board[rank, file];
 
-                    if(p != null)
+                    if (p != null)
                     {
-                        DrawPiece(file, rank, piece);
+                        var c = p.Color == ChessPieceColor.White ? Color.Red : Color.Green;
+                        DrawPiece(file, rank, pieces[(int)p.Type], c);
                     }
                 }
             }
         }
 
-        private void DrawPiece(File f, Rank r, Texture2D piece)
+        private void DrawPiece(File f, Rank r, Texture2D piece, Color c)
         {
             var x = (int)f * 64;
             var y = (7 - (int)r) * 64;
-            _spriteBatch.Draw(piece, new Rectangle(board_offset_x + x, board_offset_y + y, 64, 64), Color.Red);
+            _spriteBatch.Draw(piece, new Rectangle(board_offset_x + x, board_offset_y + y, 64, 64), c);
         }
 
         private void DrawChessBoard()
