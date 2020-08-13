@@ -18,6 +18,8 @@ namespace Chess2
         private Texture2D piece;
         private Texture2D[] pieces = new Texture2D[6];
 
+        private MouseState oldState;
+        
         private int board_offset_x = 20;
         private int board_offset_y = 20;
 
@@ -36,6 +38,8 @@ namespace Chess2
             _graphics.PreferredBackBufferWidth = 64 * 8 + 40;
             _graphics.PreferredBackBufferHeight = 64 * 8 + 40;
             _graphics.ApplyChanges();
+
+            IsMouseVisible = true;
 
             pieces[(int)ChessPieceType.Pawn] = Content.Load<Texture2D>(@"sprites\pawn");
             pieces[(int)ChessPieceType.Rook] = Content.Load<Texture2D>(@"sprites\rook");
@@ -62,7 +66,26 @@ namespace Chess2
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            MouseState newState = Mouse.GetState();
+
+            if (newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released)
+            {
+                int board_pixel_x = newState.X - board_offset_x;
+                int board_pixel_y = newState.Y - board_offset_y;
+
+                int grid_x = board_pixel_x / 64;
+                int grid_y = board_pixel_y / 64;
+
+                if (grid_x >= 0 && grid_x <= 7 && grid_y >= 0 && grid_y <= 7)
+                {
+                    var file = (File)grid_x;
+                    var rank = (Rank)(7 - grid_y);
+
+                    model.Board[rank, file] = null;
+                }
+            }
+
+            oldState = newState;
 
             base.Update(gameTime);
         }
@@ -90,7 +113,7 @@ namespace Chess2
 
                     if (p != null)
                     {
-                        var c = p.Color == ChessPieceColor.White ? Color.Red : Color.Green;
+                        var c = p.Color == ChessPieceColor.White ? Color.LimeGreen : Color.Red;
                         DrawPiece(file, rank, pieces[(int)p.Type], c);
                     }
                 }
