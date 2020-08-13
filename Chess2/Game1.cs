@@ -19,7 +19,8 @@ namespace Chess2
         private Texture2D[] pieces = new Texture2D[6];
 
         private MouseState oldState;
-        
+        private MouseState newState;
+
         private int board_offset_x = 20;
         private int board_offset_y = 20;
 
@@ -61,27 +62,67 @@ namespace Chess2
             pixel.SetData(new[] { Color.White });
         }
 
+        private ChessPiece pickedUpPiece = null;
+        private Rank pickedUpRank;
+        private File pickedUpFile;
+
+        private bool PixelToBoardCell(int pixel_x, int pixel_y, out int grid_x, out int grid_y)
+        {
+            int board_pixel_x = pixel_x - board_offset_x;
+            int board_pixel_y = pixel_y - board_offset_y;
+
+            grid_x = board_pixel_x / 64;
+            grid_y = board_pixel_y / 64;
+
+            return grid_x >= 0 && grid_x <= 7 && grid_y >= 0 && grid_y <= 7;
+
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            MouseState newState = Mouse.GetState();
+            newState = Mouse.GetState();
 
-            if (newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released)
+            if (pickedUpPiece == null)
             {
-                int board_pixel_x = newState.X - board_offset_x;
-                int board_pixel_y = newState.Y - board_offset_y;
-
-                int grid_x = board_pixel_x / 64;
-                int grid_y = board_pixel_y / 64;
-
-                if (grid_x >= 0 && grid_x <= 7 && grid_y >= 0 && grid_y <= 7)
+                if (newState.LeftButton == ButtonState.Pressed && oldState.LeftButton == ButtonState.Released)
                 {
-                    var file = (File)grid_x;
-                    var rank = (Rank)(7 - grid_y);
+                    var result = PixelToBoardCell(newState.X, newState.Y, out int grid_x, out int grid_y);
 
-                    model.Board[rank, file] = null;
+                    if (result)
+                    {
+                        var file = (File)grid_x;
+                        var rank = (Rank)(7 - grid_y);
+
+                        pickedUpRank = rank;
+                        pickedUpFile = file;
+                        pickedUpPiece = model.Board[rank, file];
+                        model.Board[rank, file] = null;
+                    }
+                }
+            } 
+            else
+            {
+                if (newState.LeftButton == ButtonState.Released && oldState.LeftButton == ButtonState.Pressed)
+                {
+                    var result = PixelToBoardCell(newState.X, newState.Y, out int grid_x, out int grid_y);
+
+                    if (result)
+                    {
+                        var file = (File)grid_x;
+                        var rank = (Rank)(7 - grid_y);
+
+                        model.Board[rank, file] = pickedUpPiece;
+
+                        pickedUpPiece = null;
+                    }
+                    else
+                    {
+                        model.Board[pickedUpRank, pickedUpFile] = pickedUpPiece;
+                        pickedUpPiece = null;
+                    }
                 }
             }
 
@@ -114,17 +155,28 @@ namespace Chess2
                     if (p != null)
                     {
                         var c = p.Color == ChessPieceColor.White ? Color.LimeGreen : Color.Red;
-                        DrawPiece(file, rank, pieces[(int)p.Type], c);
+                        DrawPieceOnBoard(file, rank, pieces[(int)p.Type], c);
                     }
                 }
             }
+
+            if (pickedUpPiece != null)
+            {
+                var c = pickedUpPiece.Color == ChessPieceColor.White ? Color.LimeGreen : Color.Red;
+                DrawPiece(newState.X - 32, newState.Y - 32, pieces[(int)pickedUpPiece.Type], c);
+            }
         }
 
-        private void DrawPiece(File f, Rank r, Texture2D piece, Color c)
+        private void DrawPieceOnBoard(File f, Rank r, Texture2D piece, Color c)
         {
             var x = (int)f * 64;
             var y = (7 - (int)r) * 64;
-            _spriteBatch.Draw(piece, new Rectangle(board_offset_x + x, board_offset_y + y, 64, 64), c);
+            DrawPiece(board_offset_x + x, board_offset_y + y, piece, c);
+        }
+
+        private void DrawPiece(int x, int y, Texture2D piece, Color c)
+        {
+            _spriteBatch.Draw(piece, new Rectangle(x, y, 64, 64), c);
         }
 
         private void DrawChessBoard()
