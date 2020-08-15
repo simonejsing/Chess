@@ -19,7 +19,7 @@ namespace GameModel
         One = 0,
         Two = 1,
         Three = 2,
-        Fire = 3,
+        Four = 3,
         Five = 4,
         Six = 5,
         Seven = 6,
@@ -29,9 +29,12 @@ namespace GameModel
     public class ChessModel
     {
         public ChessBoard Board { get; private set; } = new ChessBoard();
+        public ChessPieceColor ActivePlayer { get; private set; }
 
         public void Initialize()
         {
+            ActivePlayer = ChessPieceColor.White;
+
             foreach (File file in Enum.GetValues(typeof(File)))
             {
                 Board[Rank.Two, file] = new ChessPiece(ChessPieceType.Pawn, ChessPieceColor.White);
@@ -55,6 +58,25 @@ namespace GameModel
             Board[Rank.Eight, File.F] = new ChessPiece(ChessPieceType.Bishop, ChessPieceColor.Black);
             Board[Rank.Eight, File.G] = new ChessPiece(ChessPieceType.Knight, ChessPieceColor.Black);
             Board[Rank.Eight, File.H] = new ChessPiece(ChessPieceType.Rook, ChessPieceColor.Black);
+        }
+
+        public bool MovePiece(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var pieceToMove = Board[fromRank, fromFile];
+
+            if (pieceToMove.Color != ActivePlayer)
+                return false;
+
+            Board[toRank, toFile] = pieceToMove;
+            Board[fromRank, fromFile] = null;
+
+            AlternatePlayerTurn();
+            return true;
+        }
+
+        private void AlternatePlayerTurn()
+        {
+            ActivePlayer = ActivePlayer == ChessPieceColor.White ? ChessPieceColor.Black : ChessPieceColor.White;
         }
     }
 }

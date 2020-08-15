@@ -99,7 +99,6 @@ namespace Chess2
                         pickedUpRank = rank;
                         pickedUpFile = file;
                         pickedUpPiece = model.Board[rank, file];
-                        model.Board[rank, file] = null;
                     }
                 }
             } 
@@ -114,13 +113,11 @@ namespace Chess2
                         var file = (File)grid_x;
                         var rank = (Rank)(7 - grid_y);
 
-                        model.Board[rank, file] = pickedUpPiece;
-
+                        model.MovePiece(pickedUpRank, pickedUpFile, rank, file);
                         pickedUpPiece = null;
                     }
                     else
                     {
-                        model.Board[pickedUpRank, pickedUpFile] = pickedUpPiece;
                         pickedUpPiece = null;
                     }
                 }
@@ -151,6 +148,9 @@ namespace Chess2
                 foreach (Rank rank in Enum.GetValues(typeof(Rank)))
                 {
                     var p = model.Board[rank, file];
+
+                    if (rank == pickedUpRank && file == pickedUpFile)
+                        continue;
 
                     if (p != null)
                     {
