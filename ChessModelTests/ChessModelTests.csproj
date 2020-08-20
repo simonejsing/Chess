@@ -58,6 +58,7 @@
     <Compile Include="ChessModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RookMoveTests.cs" />
+    <Compile Include="KnightMoveTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

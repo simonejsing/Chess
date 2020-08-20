@@ -67,10 +67,20 @@ namespace GameModel
             if (pieceToMove.Color != ActivePlayer)
                 return false;
 
-            if (pieceToMove.Type == ChessPieceType.Rook)
+            bool pieceMoveValid = true;
+            switch(pieceToMove.Type)
             {
-                if (!IsValidRookMove(fromRank, fromFile, toRank, toFile))
-                    return false;
+                case ChessPieceType.Rook:
+                    pieceMoveValid = IsValidRookMove(fromRank, fromFile, toRank, toFile);
+                    break;
+                case ChessPieceType.Knight:
+                    pieceMoveValid = IsValidKnightMove(fromRank, fromFile, toRank, toFile);
+                    break;
+
+            }
+            if (!pieceMoveValid)
+            {
+                return false;
             }
 
             var pieceToCapture = Board[toRank, toFile];
@@ -82,6 +92,14 @@ namespace GameModel
 
             AlternatePlayerTurn();
             return true;
+        }
+
+        private bool IsValidKnightMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var changeInRank = Math.Abs(fromRank - toRank);
+            var changeInFile = Math.Abs(fromFile - toFile);
+
+            return (changeInRank == 2 && changeInFile == 1) || (changeInRank == 1 && changeInFile == 2);
         }
 
         private bool IsValidRookMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
