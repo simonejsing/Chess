@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace GameModel
 {
@@ -67,21 +69,17 @@ namespace GameModel
             if (pieceToMove.Color != ActivePlayer)
                 return false;
 
-            bool pieceMoveValid = true;
-            switch(pieceToMove.Type)
-            {
-                case ChessPieceType.Rook:
-                    pieceMoveValid = IsValidRookMove(fromRank, fromFile, toRank, toFile);
-                    break;
-                case ChessPieceType.Knight:
-                    pieceMoveValid = IsValidKnightMove(fromRank, fromFile, toRank, toFile);
-                    break;
+            var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
+                { ChessPieceType.Pawn, () => true },
+                { ChessPieceType.Bishop, () => true },
+                { ChessPieceType.Queen, () => true },
+                { ChessPieceType.King, () => true },
+                { ChessPieceType.Rook, () => IsValidRookMove(fromRank, fromFile, toRank, toFile) },
+                { ChessPieceType.Knight, () => IsValidKnightMove(fromRank, fromFile, toRank, toFile) },
+            };
 
-            }
-            if (!pieceMoveValid)
-            {
+            if (!pieceWiseRules[pieceToMove.Type]())
                 return false;
-            }
 
             var pieceToCapture = Board[toRank, toFile];
             if (pieceToCapture != null && pieceToCapture.Color == ActivePlayer)
