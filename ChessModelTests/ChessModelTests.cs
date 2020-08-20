@@ -37,5 +37,13 @@ namespace ChessModelTests
             model.MovePiece(Rank.Seven, File.A, Rank.Six, File.A).Should().BeFalse();
             model.ActivePlayer.Should().Be(ChessPieceColor.White);
         }
+
+        [TestMethod]
+        public void WhiteCannotMoveAPieceOnTopOfAnotherWhitePiece()
+        {
+            var model = CreateModel();
+            model.MovePiece(Rank.One, File.C, Rank.Two, File.B).Should().BeFalse();
+            model.ActivePlayer.Should().Be(ChessPieceColor.White);
+        }
     }
 }

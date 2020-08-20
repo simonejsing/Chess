@@ -67,6 +67,10 @@ namespace GameModel
             if (pieceToMove.Color != ActivePlayer)
                 return false;
 
+            var pieceToCapture = Board[toRank, toFile];
+            if (pieceToCapture != null && pieceToCapture.Color == ActivePlayer)
+                return false;
+
             Board[toRank, toFile] = pieceToMove;
             Board[fromRank, fromFile] = null;
 

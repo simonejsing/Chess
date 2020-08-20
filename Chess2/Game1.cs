@@ -149,7 +149,7 @@ namespace Chess2
                 {
                     var p = model.Board[rank, file];
 
-                    if (rank == pickedUpRank && file == pickedUpFile)
+                    if (pickedUpPiece != null && rank == pickedUpRank && file == pickedUpFile)
                         continue;
 
                     if (p != null)
