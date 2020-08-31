@@ -73,7 +73,7 @@ namespace GameModel
                 { ChessPieceType.Pawn, () => IsValidPawnMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Bishop, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Queen, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) || IsValidRookMove(fromRank, fromFile, toRank, toFile) },
-                { ChessPieceType.King, () => true },
+                { ChessPieceType.King, () => IsValidKingMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Rook, () => IsValidRookMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Knight, () => IsValidKnightMove(fromRank, fromFile, toRank, toFile) },
             };
@@ -90,6 +90,14 @@ namespace GameModel
 
             AlternatePlayerTurn();
             return true;
+        }
+
+        private bool IsValidKingMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var changeInRank = Math.Abs(fromRank - toRank);
+            var changeInFile = Math.Abs(fromFile - toFile);
+
+            return changeInRank <= 1 && changeInFile <= 1 && changeInFile + changeInRank > 0;
         }
 
         private bool IsValidPawnMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
