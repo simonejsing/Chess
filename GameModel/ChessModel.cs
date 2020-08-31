@@ -72,7 +72,7 @@ namespace GameModel
             var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
                 { ChessPieceType.Pawn, () => true },
                 { ChessPieceType.Bishop, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) },
-                { ChessPieceType.Queen, () => true },
+                { ChessPieceType.Queen, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) || IsValidRookMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.King, () => true },
                 { ChessPieceType.Rook, () => IsValidRookMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Knight, () => IsValidKnightMove(fromRank, fromFile, toRank, toFile) },
