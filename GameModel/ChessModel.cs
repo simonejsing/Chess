@@ -71,7 +71,7 @@ namespace GameModel
 
             var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
                 { ChessPieceType.Pawn, () => true },
-                { ChessPieceType.Bishop, () => true },
+                { ChessPieceType.Bishop, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Queen, () => true },
                 { ChessPieceType.King, () => true },
                 { ChessPieceType.Rook, () => IsValidRookMove(fromRank, fromFile, toRank, toFile) },
@@ -89,6 +89,30 @@ namespace GameModel
             Board[fromRank, fromFile] = null;
 
             AlternatePlayerTurn();
+            return true;
+        }
+
+        private bool IsValidBishopMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var changeInRank = Math.Abs(fromRank - toRank);
+            var changeInFile = Math.Abs(fromFile - toFile);
+
+            if (changeInFile != changeInRank)
+                return false;
+
+            var lowerRank = fromRank < toRank ? fromRank : toRank;
+            var upperRank = fromRank < toRank ? toRank : fromRank;
+            var sign = fromFile < toFile ? 1 : -1;
+
+            var currentFile = fromFile + sign;
+            for(var i = lowerRank + 1; i < upperRank; i++)
+            {
+                if (Board[i, currentFile] != null)
+                    return false;
+
+                currentFile += sign;
+            }
+
             return true;
         }
 
