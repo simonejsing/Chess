@@ -113,19 +113,18 @@ namespace GameModel
         private bool IsValidPawnMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
         {
             var pieceColor = Board[fromRank, fromFile].Color;
+            var toPiece = Board[toRank, toFile];
+            var isCapture = toPiece != null && toPiece.Color != pieceColor;
 
             var sign = pieceColor == ChessPieceColor.White ? 1 : -1;
             var startingRank = pieceColor == ChessPieceColor.White ? Rank.Two : Rank.Seven;
-            var rankMaxMove = fromRank == startingRank ? 2 : 1;
+            var rankMaxMove = fromRank == startingRank && !isCapture ? 2 : 1;
 
             var changeInRank = toRank - fromRank;
             var changeInFile = toFile - fromFile;
 
             if (changeInRank * sign < 1 || changeInRank * sign > rankMaxMove)
                 return false;
-
-            var toPiece = Board[toRank, toFile];
-            var isCapture = toPiece != null && toPiece.Color != pieceColor;
 
             if (!isCapture && changeInFile != 0)
                 return false;
