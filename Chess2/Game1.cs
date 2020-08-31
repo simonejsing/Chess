@@ -10,6 +10,7 @@ namespace Chess2
     public class Game1 : Game
     {
         private ChessModel model = new ChessModel();
+        private readonly bool[,] validMoves = new bool[8, 8];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -99,6 +100,17 @@ namespace Chess2
                         pickedUpRank = rank;
                         pickedUpFile = file;
                         pickedUpPiece = model.Board[rank, file];
+
+                        if(pickedUpPiece != null)
+                        {
+                            for(var i = Rank.One; i <= Rank.Eight; i++)
+                            {
+                                for(var j = File.A; j <= File.H; j++)
+                                {
+                                    validMoves[(int)i, (int)j] = model.IsValidMove(pickedUpRank, pickedUpFile, i, j);
+                                }
+                            }
+                        }
                     }
                 }
             } 
@@ -114,11 +126,16 @@ namespace Chess2
                         var rank = (Rank)(7 - grid_y);
 
                         model.MovePiece(pickedUpRank, pickedUpFile, rank, file);
-                        pickedUpPiece = null;
                     }
-                    else
+
+                    pickedUpPiece = null;
+
+                    for (var i = Rank.One; i <= Rank.Eight; i++)
                     {
-                        pickedUpPiece = null;
+                        for (var j = File.A; j <= File.H; j++)
+                        {
+                            validMoves[(int)i, (int)j] = false;
+                        }
                     }
                 }
             }
@@ -134,11 +151,28 @@ namespace Chess2
             _spriteBatch.Begin();
 
             DrawChessBoard();
+            DrawOverlay();
             DrawPieces();
 
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void DrawOverlay()
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (validMoves[j, i])
+                    {
+                        int x2 = i * 64;
+                        int y2 = (7 - j) * 64;
+                        _spriteBatch.Draw(pixel, new Rectangle(board_offset_x + x2, board_offset_y + y2, 64, 64), Color.Yellow);
+                    }
+                }
+            }
         }
 
         private void DrawPieces()

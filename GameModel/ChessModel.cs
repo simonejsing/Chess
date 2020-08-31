@@ -66,6 +66,20 @@ namespace GameModel
         {
             var pieceToMove = Board[fromRank, fromFile];
 
+            if (!IsValidMove(fromRank, fromFile, toRank, toFile))
+                return false;
+
+            Board[toRank, toFile] = pieceToMove;
+            Board[fromRank, fromFile] = null;
+
+            AlternatePlayerTurn();
+            return true;
+        }
+
+        public bool IsValidMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var pieceToMove = Board[fromRank, fromFile];
+
             if (pieceToMove.Color != ActivePlayer)
                 return false;
 
@@ -85,10 +99,6 @@ namespace GameModel
             if (pieceToCapture != null && pieceToCapture.Color == ActivePlayer)
                 return false;
 
-            Board[toRank, toFile] = pieceToMove;
-            Board[fromRank, fromFile] = null;
-
-            AlternatePlayerTurn();
             return true;
         }
 

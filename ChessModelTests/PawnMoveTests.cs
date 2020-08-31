@@ -61,5 +61,11 @@ namespace ChessModelTests
             PawnCapture(Rank.Three, File.D, Rank.Four, File.E, ChessPieceColor.White).Should().BeFalse();
             PawnCapture(Rank.Three, File.D, Rank.Four, File.C, ChessPieceColor.White).Should().BeFalse();
         }
+
+        [TestMethod]
+        public void WhitePawnCannotCaptureDiagonallyWhenMovingTwoSquaresForward()
+        {
+            PawnCapture(Rank.Two, File.D, Rank.Four, File.C, ChessPieceColor.Black).Should().BeFalse();
+        }
     }
 }
