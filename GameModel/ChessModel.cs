@@ -70,7 +70,7 @@ namespace GameModel
                 return false;
 
             var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
-                { ChessPieceType.Pawn, () => true },
+                { ChessPieceType.Pawn, () => IsValidPawnMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Bishop, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.Queen, () => IsValidBishopMove(fromRank, fromFile, toRank, toFile) || IsValidRookMove(fromRank, fromFile, toRank, toFile) },
                 { ChessPieceType.King, () => true },
@@ -89,6 +89,32 @@ namespace GameModel
             Board[fromRank, fromFile] = null;
 
             AlternatePlayerTurn();
+            return true;
+        }
+
+        private bool IsValidPawnMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var pieceColor = Board[fromRank, fromFile].Color;
+
+            var sign = pieceColor == ChessPieceColor.White ? 1 : -1;
+            var startingRank = pieceColor == ChessPieceColor.White ? Rank.Two : Rank.Seven;
+            var rankMaxMove = fromRank == startingRank ? 2 : 1;
+
+            var changeInRank = toRank - fromRank;
+            var changeInFile = toFile - fromFile;
+
+            if (changeInRank * sign < 1 || changeInRank * sign > rankMaxMove)
+                return false;
+
+            var toPiece = Board[toRank, toFile];
+            var isCapture = toPiece != null && toPiece.Color != pieceColor;
+
+            if (!isCapture && changeInFile != 0)
+                return false;
+
+            if (isCapture && Math.Abs(changeInFile) != 1)
+                return false;
+
             return true;
         }
 

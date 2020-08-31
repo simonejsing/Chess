@@ -60,6 +60,7 @@
     <Compile Include="RookMoveTests.cs" />
     <Compile Include="KnightMoveTests.cs" />
     <Compile Include="BishopMoveTests.cs" />
+    <Compile Include="PawnMoveTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
