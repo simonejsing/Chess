@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameModel", "GameModel\Game
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessModelTests", "ChessModelTests\ChessModelTests.csproj", "{755E6043-C267-406D-ACE6-7331319D2D1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KonradsSuperChessComputer", "KonradsSuperChessComputer\KonradsSuperChessComputer.csproj", "{94928989-80E4-4E0F-A6B0-6CBF57550CEF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{755E6043-C267-406D-ACE6-7331319D2D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{755E6043-C267-406D-ACE6-7331319D2D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{755E6043-C267-406D-ACE6-7331319D2D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94928989-80E4-4E0F-A6B0-6CBF57550CEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94928989-80E4-4E0F-A6B0-6CBF57550CEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94928989-80E4-4E0F-A6B0-6CBF57550CEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94928989-80E4-4E0F-A6B0-6CBF57550CEF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

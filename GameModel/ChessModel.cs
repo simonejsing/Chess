@@ -28,6 +28,12 @@ namespace GameModel
         Eight = 7,
     }
 
+    public struct Cell
+    {
+        public Rank rank;
+        public File file;
+    }
+
     public class ChessModel
     {
         public ChessBoard Board { get; private set; } = new ChessBoard();
@@ -62,6 +68,11 @@ namespace GameModel
             Board[Rank.Eight, File.H] = new ChessPiece(ChessPieceType.Rook, ChessPieceColor.Black);
         }
 
+        public bool MovePiece(Cell from, Cell to)
+        {
+            return MovePiece(from.rank, from.file, to.rank, to.file);
+        }
+
         public bool MovePiece(Rank fromRank, File fromFile, Rank toRank, File toFile)
         {
             var pieceToMove = Board[fromRank, fromFile];
@@ -80,7 +91,7 @@ namespace GameModel
         {
             var pieceToMove = Board[fromRank, fromFile];
 
-            if (pieceToMove.Color != ActivePlayer)
+            if (pieceToMove == null || pieceToMove.Color != ActivePlayer)
                 return false;
 
             var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
@@ -100,6 +111,24 @@ namespace GameModel
                 return false;
 
             return true;
+        }
+
+        public IEnumerable<ChessPieceLocation> GetPieceLocations()
+        {
+            for (var i = 0; i < 8; i++)
+            {
+                for (var j = 0; j < 8; j++)
+                {
+                    var r = (Rank)i;
+                    var f = (File)j;
+                    var p = Board[r, f];
+
+                    if(p != null)
+                    {
+                        yield return new ChessPieceLocation { Piece = p, Cell = new Cell { rank = r, file = f } };
+                    }
+                }
+            }
         }
 
         private bool IsValidKingMove(Rank fromRank, File fromFile, Rank toRank, File toFile)

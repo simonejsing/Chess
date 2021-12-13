@@ -25,6 +25,14 @@ namespace Chess2
         private int board_offset_x = 20;
         private int board_offset_y = 20;
 
+        private ChessPieceColor player1 = ChessPieceColor.White;
+        private ChessPieceColor player2 = ChessPieceColor.Black;
+
+        private bool player1_is_computer = false;
+        private bool player2_is_computer = true;
+
+        private IChessEngine engine = new KonradsSuperChessComputer.Engine(ChessPieceColor.Black);
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -79,6 +87,16 @@ namespace Chess2
 
         }
 
+        private void TakePlayerTurn(Cell from, Cell to)
+        {
+            model.MovePiece(from, to);
+
+            if (player2_is_computer)
+            {
+                engine.MakeMove(model);
+            }
+        }
+
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
@@ -125,7 +143,10 @@ namespace Chess2
                         var file = (File)grid_x;
                         var rank = (Rank)(7 - grid_y);
 
-                        model.MovePiece(pickedUpRank, pickedUpFile, rank, file);
+                        TakePlayerTurn(
+                            new Cell { rank = pickedUpRank, file = pickedUpFile },
+                            new Cell { rank = rank, file = file }
+                        );
                     }
 
                     pickedUpPiece = null;
