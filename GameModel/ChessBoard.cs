@@ -9,6 +9,25 @@ namespace GameModel
     {
         private readonly ChessPiece[,] board = new ChessPiece[8, 8];
 
+        public ChessBoard()
+        {
+        }
+
+        public ChessBoard(ChessBoard other)
+        {
+            for (var j = 0; j < 8; j++)
+            {
+                for (var i = 0; i < 8; i++)
+                {
+                    var p = other.board[j, i];
+                    if (p != null)
+                    {
+                        this.board[j, i] = new ChessPiece(p);
+                    }
+                }
+            }
+        }
+
         public ChessPiece this[Rank r, File f]
         {
             get => GetPiece(r, f);

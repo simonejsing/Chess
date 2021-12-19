@@ -30,5 +30,11 @@ namespace GameModel
             Type = type;
             Color = color;
         }
+
+        public ChessPiece(ChessPiece other)
+        {
+            this.Type = other.Type;
+            this.Color = other.Color;
+        }
     }
 }

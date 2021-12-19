@@ -39,6 +39,16 @@ namespace GameModel
         public ChessBoard Board { get; private set; } = new ChessBoard();
         public ChessPieceColor ActivePlayer { get; private set; }
 
+        public ChessModel()
+        {
+        }
+
+        public ChessModel(ChessModel other)
+        {
+            this.Board = new ChessBoard(other.Board);
+            this.ActivePlayer = other.ActivePlayer;
+        }
+
         public void Initialize()
         {
             ActivePlayer = ChessPieceColor.White;
@@ -66,6 +76,11 @@ namespace GameModel
             Board[Rank.Eight, File.F] = new ChessPiece(ChessPieceType.Bishop, ChessPieceColor.Black);
             Board[Rank.Eight, File.G] = new ChessPiece(ChessPieceType.Knight, ChessPieceColor.Black);
             Board[Rank.Eight, File.H] = new ChessPiece(ChessPieceType.Rook, ChessPieceColor.Black);
+        }
+
+        public bool MovePiece(ChessMove move)
+        {
+            return MovePiece(move.Source.Cell, move.Destination);
         }
 
         public bool MovePiece(Cell from, Cell to)
