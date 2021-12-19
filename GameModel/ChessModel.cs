@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace GameModel
@@ -90,16 +91,49 @@ namespace GameModel
 
         public bool MovePiece(Rank fromRank, File fromFile, Rank toRank, File toFile)
         {
-            var pieceToMove = Board[fromRank, fromFile];
-
             if (!IsValidMove(fromRank, fromFile, toRank, toFile))
                 return false;
 
-            Board[toRank, toFile] = pieceToMove;
-            Board[fromRank, fromFile] = null;
-
-            AlternatePlayerTurn();
+            CommitMove(fromRank, fromFile, toRank, toFile);
             return true;
+        }
+
+        private void CommitMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            Board[toRank, toFile] = Board[fromRank, fromFile];
+            Board[fromRank, fromFile] = null;
+            AlternatePlayerTurn();
+        }
+
+        public bool WhiteIsInCheck()
+        {
+            return KingIsInCheck(ChessPieceColor.White);
+        }
+
+        public bool BlackIsInCheck()
+        {
+            return KingIsInCheck(ChessPieceColor.Black);
+        }
+
+        public bool KingIsInCheck(ChessPieceColor color)
+        {
+            var myKingPosition = GetPieceLocations().Where(pl => pl.Piece.Color == color && pl.Piece.Type == ChessPieceType.King).FirstOrDefault();
+            if (myKingPosition.Piece == null)
+            {
+                return false;
+            }
+
+            var opponentPieces = GetPieceLocations().Where(pl => pl.Piece.Color != color);
+
+            foreach(var p in opponentPieces)
+            {
+                if (IsValidPhysicalMove(p.Cell, myKingPosition.Cell))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool IsValidMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
@@ -107,6 +141,34 @@ namespace GameModel
             var pieceToMove = Board[fromRank, fromFile];
 
             if (pieceToMove == null || pieceToMove.Color != ActivePlayer)
+                return false;
+
+            if(!IsValidPhysicalMove(fromRank, fromFile, toRank, toFile))
+            {
+                return false;
+            }
+
+            // Check if the resulting position is valid (i.e. current player's king is not in check)
+            var simulatedModel = new ChessModel(this);
+            simulatedModel.CommitMove(fromRank, fromFile, toRank, toFile);
+            return !simulatedModel.KingIsInCheck(ActivePlayer);
+        }
+
+        private bool IsValidPhysicalMove(Cell from, Cell to)
+        {
+            return IsValidPhysicalMove(from.rank, from.file, to.rank, to.file);
+        }
+
+        /**
+         * This method calculates if the specified move is physically possible to make with
+         * the piece. It does not consider whether the resulting position is a valid position
+         * with regards to whether or not the King is in check.
+         */
+        private bool IsValidPhysicalMove(Rank fromRank, File fromFile, Rank toRank, File toFile)
+        {
+            var pieceToMove = Board[fromRank, fromFile];
+
+            if (pieceToMove == null)
                 return false;
 
             var pieceWiseRules = new Dictionary<ChessPieceType, Func<bool>>() {
@@ -122,7 +184,7 @@ namespace GameModel
                 return false;
 
             var pieceToCapture = Board[toRank, toFile];
-            if (pieceToCapture != null && pieceToCapture.Color == ActivePlayer)
+            if (pieceToCapture != null && pieceToCapture.Color == pieceToMove.Color)
                 return false;
 
             return true;
@@ -187,17 +249,15 @@ namespace GameModel
             if (changeInFile != changeInRank)
                 return false;
 
-            var lowerRank = fromRank < toRank ? fromRank : toRank;
-            var upperRank = fromRank < toRank ? toRank : fromRank;
-            var sign = fromFile < toFile ? 1 : -1;
+            var fileSign = fromFile < toFile ? 1 : -1;
+            var rankSign = fromRank < toRank ? 1 : -1;
 
-            var currentFile = fromFile + sign;
-            for(var i = lowerRank + 1; i < upperRank; i++)
+            for (var i = 1; i < changeInFile; i++)
             {
-                if (Board[i, currentFile] != null)
+                var r = fromRank + i * rankSign;
+                var f = fromFile + i * fileSign;
+                if (Board[r, f] != null)
                     return false;
-
-                currentFile += sign;
             }
 
             return true;
